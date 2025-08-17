@@ -129,3 +129,136 @@
     </script>
 </body>
 </html>
+=======
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Notes</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            background: #4CAF50;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            font-size: 1.5rem;
+        }
+        main {
+            max-width: 600px;
+            margin: 30px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        h2 {
+            margin-top: 40px;
+            border-bottom: 2px solid #eee;
+            padding-bottom: 5px;
+        }
+        form input, form textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 8px 0;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            font-size: 1rem;
+        }
+        form button {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background 0.2s ease-in-out;
+        }
+        form button:hover {
+            background: #45a049;
+        }
+        .note {
+            background: #f1f1f1;
+            padding: 12px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        .note-date {
+            font-size: 0.9rem;
+            color: #777;
+        }
+    </style>
+</head>
+<body>
+
+    <header>My Notes</header>
+
+    <main>
+        <form id="noteForm">
+            <input type="text" id="title" placeholder="Note title" required>
+            <textarea id="content" placeholder="Write your notes" required></textarea>
+            <button type="submit">Add Note</button>
+        </form>
+
+        <h2>All Notes</h2>
+        <div id="notesList"></div>
+    </main>
+
+    <script>
+        // Change this to your Render backend URL when deployed
+       
+
+        // Fetch all notes
+        function fetchNotes() {
+            fetch(apiUrl)
+                .then(res => res.json())
+                .then(data => {
+                    const notesList = document.getElementById("notesList");
+                    notesList.innerHTML = "";
+                    data.forEach(note => {
+                        notesList.innerHTML += `
+                            <div class="note">
+                                <strong>${note.title}</strong>
+                                <p>${note.content}</p>
+                                <div class="note-date">${new Date(note.date).toLocaleString()}</div>
+                            </div>
+                        `;
+                    });
+                })
+                .catch(err => console.error("Error fetching notes:", err));
+        }
+
+        // Add a new note
+        document.getElementById("noteForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const title = document.getElementById("title").value;
+            const content = document.getElementById("content").value;
+
+            fetch(apiUrl, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ title, content })
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert(data.message);
+                fetchNotes();
+                document.getElementById("noteForm").reset();
+            })
+            .catch(err => console.error("Error adding note:", err));
+        });
+
+        // Load notes on page load
+        fetchNotes();
+    </script>
+</body>
+</html>
+
